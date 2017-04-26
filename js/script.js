@@ -27,6 +27,9 @@ function switchOrder(element_clicked)
 	// all the siblings of the selected div
 	var children = Array.from(div_parent.childNodes);
 
+	// the detail description of element_clicked
+	var detail_element = element_clicked.getElementsByClassName("detail-text")[0];
+
 	children = children.filter(function(div_child){
 		try{
 			var class_arr = Array.from(div_child.classList);
@@ -36,19 +39,16 @@ function switchOrder(element_clicked)
 		}
 		if (div_child.classList.contains("academics_item"))
 		{
+			if (detail_element.hidden == true)
+			{
+				div_child.classList.toggle("removed-item");
+			}
+			
 			return true;
 		}
 		return false;
 	});
 
-	children.forEach(function(div_child){
-		console.log(div_child);
-	});
-
-	console.log(div_parent.className);
-	console.log(children.length);
-
-	var detail_element = element_clicked.getElementsByClassName("detail-text")[0];
 	if (detail_element.hidden == false)
 	{
 		detail_element.hidden = true; 
@@ -56,30 +56,40 @@ function switchOrder(element_clicked)
 	}
 	else 
 	{
-		detail_element.hidden = false;
-		element_clicked.className = "academics_item col-md-12";
-		while (div_parent.firstChild)
-		{
-			div_parent.removeChild(div_parent.firstChild);
-		}
-		div_parent.appendChild(element_clicked);
-		children.forEach(function(div_child){
-			var detail_child = div_child.getElementsByClassName("detail-text")[0];
-			if (div_child != element_clicked)
-			{
-				if (detail_child.hidden == false)
-				{
-					div_child.className = "academics_item";
-					detail_child.hidden = true;
-				}
-				var delayMillis = 2000; //1 second
+		var delayMillis = 2000; //1 second
 
-				setTimeout(function() {
-					div_parent.appendChild(div_child);
-				}, delayMillis);
-				
+		setTimeout(function() {
+			while (div_parent.firstChild)
+			{
+				div_parent.removeChild(div_parent.firstChild);
 			}
-		});
+		}, delayMillis);
+
+		setTimeout(function() {
+			div_parent.appendChild(element_clicked);
+			detail_element.hidden = false;
+			element_clicked.className = "academics_item col-md-12";
+			for (i=0; i < children.length; i++)
+			{
+				div_child = children[i];
+				if (div_child != element_clicked)
+				{
+					div_child.classList.toggle("removed-item");
+				}
+				var detail_child = div_child.getElementsByClassName("detail-text")[0];
+				if (div_child != element_clicked)
+				{
+					if (detail_child.hidden == false)
+					{
+						div_child.className = "academics_item";
+						detail_child.hidden = true;
+					}
+					
+					div_parent.appendChild(div_child);
+					console.log(div_child);			
+				}
+			}
+		}, delayMillis);
 
 	}
 }
